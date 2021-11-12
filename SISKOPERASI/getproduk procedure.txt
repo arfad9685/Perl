@@ -1,0 +1,70 @@
+SET TERM ^ ;
+
+create or alter procedure get_produk 
+returns (
+    kodebrg varchar(10),
+    nonaktif varchar(1),
+    namabrg varchar(40),
+    jenis varchar(3),
+    satuan varchar(10),
+    satck varchar(10),
+    satstore varchar(10),
+    groupsales varchar(30),
+    tglberlaku date,
+    tglexp date,
+    bo varchar(1),
+    dapur varchar(10),
+    katsales varchar(20),
+    jns_resto varchar(10),
+    ppn varchar(1),
+    charge varchar(1),
+    kodegen varchar(10))
+as
+begin
+for EXECUTE STATEMENT 'select KODEBRG, NONAKTIF, NAMABRG, JENIS, SATUAN, SATCK, SATSTORE, GROUPSALES,
+TGLBERLAKU, TGLEXP, BO, DAPUR, KATSALES, JNS_RESTO, PPN, CHARGE, KODEGEN from produk'  ON EXTERNAL DATA SOURCE '116.197.130.147:/home/sarirasa/data/sisinv.fdb'
+AS USER 'sisacc' PASSWORD 'masteracc'
+INTO :KODEBRG, :NONAKTIF, :NAMABRG, :JENIS, :SATUAN, :SATCK, :SATSTORE, :GROUPSALES,
+:TGLBERLAKU, :TGLEXP, :BO, :DAPUR, :KATSALES, :JNS_RESTO, :PPN, :CHARGE, :KODEGEN
+do suspend;
+end^
+
+SET TERM ; ^
+
+/* Existing privileges on this procedure */
+
+GRANT EXECUTE ON PROCEDURE GET_PRODUK TO SISADMIN;
+GRANT EXECUTE ON PROCEDURE GET_PRODUK TO SISBOH;
+
+
+SET TERM ^ ;
+create or alter procedure GETPRODUK
+returns (
+    BRG_ID varchar(10),
+    ISAKTIF char(1),
+    BRG_NAMA varchar(40),
+    BRG_JENIS varchar(3),
+    BRG_SATUAN varchar(10),
+    BRG_SATGUD varchar(10),
+    BRG_SATSTORE varchar(10),
+    BRG_GROUP integer,
+    BRG_BRAND varchar(10),
+    LAST_PRICE numeric(15)
+
+as
+begin
+for EXECUTE STATEMENT 'select BRG_ID, ISAKTIF, BRG_NAMA, BRG_JENIS, BRG_SATUAN, BRG_SATGUD, BRG_SATSTORE, BRG_GROUP,
+  BRG_BRAND, LAST_PRICE from m_produk_all'  ON EXTERNAL DATA SOURCE '172.16.10.18:/ssd/sis_db/sisinv.fdb'
+AS USER 'sisadmin' PASSWORD 'siserp'
+INTO :BRG_ID, :ISAKTIF, :BRG_NAMA, :BRG_JENIS, :BRG_SATUAN, :BRG_SATGUD, :BRG_SATSTORE, :BRG_GROUP,
+ :BRG_BRAND, :LAST_PRICE
+do suspend;
+end^
+
+SET TERM ; ^
+
+/* Existing privileges on this procedure */
+
+GRANT EXECUTE ON PROCEDURE GETPRODUK TO SISADMIN;
+
+
