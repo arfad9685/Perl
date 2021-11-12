@@ -1,0 +1,68 @@
+~;
+
+
+ if ($in{jenis} eq 'Dinnerware'){
+	 $jenisbrg = $dbh->prepare("SELECT brg_id, brg_nama, pg.group_nama,p.brg_satuan ,p.brg_brand,p.brg_group
+											from M_PRODUK p
+											left outer join m_produk_grp pg on pg.group_id=p.brg_group
+											where p.isaktif='Y'
+											and p.brg_group='15'
+											and p.brg_brand='$in{cab}' ");
+                        $jenisbrg->execute();
+                        ( @jenis = $jenisbrg->fetchrow_array());
+ }
+
+
+
+
+
+select w.qty_waste,mw.penalti from t_waste w
+							left join m_waste_reason mw on mw.recid=w.alasan_id
+							where w.tgl_waste >='$rec[5]' and w.tgl_waste <'$tgl1'
+							and w.store_id='$in{cab}'
+							and w.alasan_id='9'
+							and w.brg_id='$rsdet[0]'
+
+select w.qty_koreksi from t_waste w where 
+						 w.tgl_waste >='$rec[5]' and w.tgl_waste <'$tgl1'
+						 and w.store_id='$in{cab}'
+						 and w.alasan_id='27'
+						 and w.brg_id='$rsdet[0]'
+						 and w.iskonfirm='Y' and w.qty_koreksi>0
+
+
+select w.qty_waste,mw.penalti from t_waste w
+							left join m_waste_reason mw on mw.recid=w.alasan_id
+							where w.tgl_waste >='$rec[5]' and w.tgl_waste <'$tgl1'
+							and w.store_id='$in{cab}'
+							and w.alasan_id not in ('9','13','27')
+							and mw.jenis='W'
+							and mw.isaktif='Y'
+							and w.brg_id='$rsdet[0]'
+
+
+<td align=left>&nbsp;"+data[x].brg_id+"</td>"; 
+
+
+
+
+#print ("select a.toleransi from m_toleransi a,m_cab c where a.skala= c.store_skala	and a.brand=c.store_brand
+#							and c.store_id='$in{cab}'");
+	
+$qtoleransi=$dbh->prepare("select a.toleransi from m_toleransi a,m_cab c
+							where a.skala= c.store_skala
+							and a.brand=c.store_brand
+							and c.store_id='$in{cab}'");
+ $qtoleransi->execute();
+ @rect=$qtoleransi->fetchrow();
+ $rtoleransi=$rect[0];
+
+
+
+ @dtawal= split(/\//,$rec[5]);
+@dtakhir= split(/\//,$tgl1);
+$days = Delta_Days($dtawal[2], $dtawal[0],$dtawal[1],$dtakhir[2], $dtakhir[0],$dtakhir[1]);
+#print $days+1;
+$days=$days+1;
+
+$toleransi=$days*$rtoleransi;
